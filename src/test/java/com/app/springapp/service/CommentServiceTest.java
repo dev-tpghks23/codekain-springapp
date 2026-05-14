@@ -33,4 +33,16 @@ public class CommentServiceTest {
         Long postId = 1L;
         commentService.writePostComment(postId, commentRequestDTO);
     }
+
+//    대댓글 달기 테스트
+    @Test
+    public void writePostReplyTest(){
+        CommentRequestDTO commentRequestDTO = new CommentRequestDTO();
+        commentRequestDTO.setCommentContent("대댓글 테스트 입니다.");
+//        Long postId = 1L;
+        Long postId = 4L;
+        Long commentId = 1L;
+
+        commentService.writePostReply(postId, commentId, commentRequestDTO);
+    }
 }

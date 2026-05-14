@@ -13,13 +13,27 @@ import java.util.List;
 public class CommentDAO {
     private final CommentMapper commentMapper;
 
-//    게시글에 달린 댓글 조회
     public List<CommentDTO> findAllByPostId(Long postId){
         return commentMapper.selectAllByPostId(postId);
     }
 
-//    게시글에 댓글 작성
     public void save(CommentVO commentVO){
         commentMapper.insert(commentVO);
+    }
+
+    public int existByIdAndUserId(CommentVO commentVO) {
+        return commentMapper.existByIdAndUserId(commentVO);
+    }
+
+    public void update(CommentVO commentVO) {
+        commentMapper.update(commentVO);
+    }
+
+    public void updateIsDeleted(CommentVO commentVO) {
+        commentMapper.updateIsDeleted(commentVO);
+    }
+
+    public void updateRepliesIsDeleted(Long commentId) {
+        commentMapper.updateRepliesIsDeleted(commentId);
     }
 }

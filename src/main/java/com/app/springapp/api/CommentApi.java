@@ -67,4 +67,107 @@ public class CommentApi {
                 .status(HttpStatus.OK)
                 .body(ApiResponseDTO.of(true, "댓글 작성 성공"));
     }
+
+    @PostMapping("/{postId}/replies/{commentId}")
+    @Operation(description = "게시글 내 대댓글 작성")
+    @ApiResponse(responseCode = "200", description = "대댓글 작성 성공")
+    @ApiResponse(responseCode = "400", description = "대댓글 작성 실패 (잘못된 요청)")
+    @Parameter(
+            name = "postId",
+            description = "게시글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    @Parameter(name = "commentId",
+            description = "부모 댓글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> writePostReply(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDTO commentRequestDTO
+    ) {
+        commentService.writePostReply(postId, commentId, commentRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "대댓글 작성 성공"));
+    }
+
+    @PutMapping("/{postId}/{commentId}")
+    @Operation(description = "게시글 내 댓글 수정")
+    @ApiResponse(responseCode = "200", description = "댓글 수정 성공")
+    @ApiResponse(responseCode = "400", description = "해당 댓글 수정 권한 없습니다.")
+    @Parameter(
+            name = "postId",
+            description = "게시글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    @Parameter(
+            name = "commentId",
+            description = "댓글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> updatePostComment(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDTO commentRequestDTO
+    ) {
+        commentService.updateComment(commentId, commentRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "댓글 수정 성공"));
+    }
+
+    @DeleteMapping("/{commentId}")
+    @Operation(description = "댓글 삭제 (대댓글 포함 소프트 삭제)")
+    @ApiResponse(responseCode = "204", description = "댓글 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "해당 댓글 삭제 권한 없습니다.")
+    @Parameter(
+            name = "commentId",
+            description = "댓글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> deletePostComment(
+            @PathVariable Long commentId
+    ) {
+        commentService.deleteComment(commentId);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(ApiResponseDTO.of(true, "댓글 삭제 성공"));
+    }
+
+    @DeleteMapping("/replies/{replyId}")
+    @Operation(description = "대댓글 소프트 삭제")
+    @ApiResponse(responseCode = "204", description = "대댓글 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "해당 대댓글 삭제 권한 없습니다.")
+    @Parameter(
+            name = "replyId",
+            description = "대댓글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> deletePostReply(
+            @PathVariable Long replyId
+    ) {
+        commentService.deleteReply(replyId);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(ApiResponseDTO.of(true, "대댓글 삭제 성공"));
+    }
 }

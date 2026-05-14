@@ -20,7 +20,6 @@ public class CommentServiceImpl implements CommentService {
     private final CommentDAO commentDAO;
     private final CommunityAuthService communityAuthService;
 
-    //    특정 게시글 상세 페이지 내에서 해당 게시글에 달린 댓글 불러오기
     @Override
     public List<CommentResponseDTO> getAllPostComments(Long postId) {
         return commentDAO.findAllByPostId(postId)
@@ -29,20 +28,83 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toList());
     }
 
-//    게시글 에 댓글 작성
     @Override
     public void writePostComment(Long postId, CommentRequestDTO commentRequestDTO) {
+        Long userId = communityAuthService.getUserId();
+        communityAuthService.checkUserValidity(userId);
+
         CommentVO commentVO = CommentVO.from(commentRequestDTO);
         commentVO.setPostId(postId);
-        commentVO.setUserId(communityAuthService.getUserId());
-
-//        유저 토큰 검증 시나리오
-        communityAuthService.checkUserValidity(postId);
+        commentVO.setUserId(userId);
 
         try {
             commentDAO.save(commentVO);
         } catch (Exception e) {
             throw new CommentException(HttpStatus.BAD_REQUEST, "댓글 작성 실패");
         }
+    }
+
+    @Override
+    public void writePostReply(Long postId, Long commentId, CommentRequestDTO commentRequestDTO) {
+        Long userId = communityAuthService.getUserId();
+        communityAuthService.checkUserValidity(userId);
+
+        CommentVO commentVO = CommentVO.from(commentRequestDTO);
+        commentVO.setPostId(postId);
+        commentVO.setUserId(userId);
+        commentVO.setCommentId(commentId);
+
+        try {
+            commentDAO.save(commentVO);
+        } catch (Exception e) {
+            throw new CommentException(HttpStatus.BAD_REQUEST, "대댓글 작성 실패");
+        }
+    }
+
+    @Override
+    public void updateComment(Long commentId, CommentRequestDTO commentRequestDTO) {
+        Long userId = communityAuthService.getUserId();
+
+        CommentVO commentVO = new CommentVO();
+        commentVO.setId(commentId);
+        commentVO.setUserId(userId);
+
+        if (commentDAO.existByIdAndUserId(commentVO) == 0) {
+            throw new CommentException(HttpStatus.BAD_REQUEST, "해당 댓글 수정 권한 없습니다.");
+        }
+
+        commentVO.setCommentContent(commentRequestDTO.getCommentContent());
+        commentDAO.update(commentVO);
+    }
+
+    @Override
+    public void deleteComment(Long commentId) {
+        Long userId = communityAuthService.getUserId();
+
+        CommentVO commentVO = new CommentVO();
+        commentVO.setId(commentId);
+        commentVO.setUserId(userId);
+
+        if (commentDAO.existByIdAndUserId(commentVO) == 0) {
+            throw new CommentException(HttpStatus.BAD_REQUEST, "해당 댓글 삭제 권한 없습니다.");
+        }
+
+        commentDAO.updateRepliesIsDeleted(commentId);
+        commentDAO.updateIsDeleted(commentVO);
+    }
+
+    @Override
+    public void deleteReply(Long replyId) {
+        Long userId = communityAuthService.getUserId();
+
+        CommentVO commentVO = new CommentVO();
+        commentVO.setId(replyId);
+        commentVO.setUserId(userId);
+
+        if (commentDAO.existByIdAndUserId(commentVO) == 0) {
+            throw new CommentException(HttpStatus.BAD_REQUEST, "해당 대댓글 삭제 권한 없습니다.");
+        }
+
+        commentDAO.updateIsDeleted(commentVO);
     }
 }

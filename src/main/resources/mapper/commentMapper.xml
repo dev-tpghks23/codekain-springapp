@@ -18,4 +18,28 @@
         VALUES (#{id}, #{commentContent}, #{postId}, #{userId}, #{commentId})
     </insert>
 
+    <select id="existByIdAndUserId" parameterType="CommentVO" resultType="int">
+        SELECT COUNT(*)
+        FROM TBL_COMMENT
+        WHERE ID = #{id} AND USER_ID = #{userId} AND COMMENT_IS_DELETED = 0
+    </select>
+
+    <update id="update" parameterType="CommentVO">
+        UPDATE TBL_COMMENT
+        SET COMMENT_CONTENT = #{commentContent}
+        WHERE ID = #{id} AND USER_ID = #{userId} AND COMMENT_IS_DELETED = 0
+    </update>
+
+    <update id="updateIsDeleted" parameterType="CommentVO">
+        UPDATE TBL_COMMENT
+        SET COMMENT_IS_DELETED = 1
+        WHERE ID = #{id} AND USER_ID = #{userId}
+    </update>
+
+    <update id="updateRepliesIsDeleted" parameterType="Long">
+        UPDATE TBL_COMMENT
+        SET COMMENT_IS_DELETED = 1
+        WHERE COMMENT_ID = #{commentId}
+    </update>
+
 </mapper>

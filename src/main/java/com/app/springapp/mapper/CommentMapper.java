@@ -8,13 +8,15 @@ import java.util.List;
 
 @Mapper
 public interface CommentMapper {
-    // 댓글 조회 (게시글에 달린 댓글 조회)
     public List<CommentDTO> selectAllByPostId(Long postId);
 
-    // 댓글 작성
-    public void insert (CommentVO commentVO);
+    public void insert(CommentVO commentVO);
 
-    // 댓글 수정
+    public int existByIdAndUserId(CommentVO commentVO);
 
-    // 댓글 삭제 (소프트 삭제)
+    public void update(CommentVO commentVO);
+
+    public void updateIsDeleted(CommentVO commentVO);
+
+    public void updateRepliesIsDeleted(Long commentId);
 }
