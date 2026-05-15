@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.springapp.mapper.CommentLikeMapper">
+    <insert id="insert" parameterType="CommentLikeVO">
+        <selectKey keyProperty="id" resultType="Long" order="BEFORE">
+            SELECT SEQ_COMMENT_LIKE.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TBL_COMMENT_LIKE (ID, USER_ID, COMMENT_ID)
+        VALUES (#{id}, #{userId}, #{commentId})
+    </insert>
+</mapper>

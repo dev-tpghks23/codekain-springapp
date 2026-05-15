@@ -2,9 +2,11 @@ package com.app.springapp.service;
 
 import com.app.springapp.domain.dto.request.CommentRequestDTO;
 import com.app.springapp.domain.dto.response.CommentResponseDTO;
+import com.app.springapp.domain.vo.CommentLikeVO;
 import com.app.springapp.domain.vo.CommentVO;
 import com.app.springapp.exception.CommentException;
 import com.app.springapp.repository.CommentDAO;
+import com.app.springapp.repository.CommentLikeDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
     private final CommentDAO commentDAO;
     private final CommunityAuthService communityAuthService;
+    private final CommentLikeDAO commentLikeDAO;
 
     @Override
     public List<CommentResponseDTO> getAllPostComments(Long postId) {
@@ -104,5 +107,22 @@ public class CommentServiceImpl implements CommentService {
         }
 
         commentDAO.updateIsDeleted(commentVO);
+    }
+
+//    댓글 좋아요 남기기
+    @Override
+    public void addCommentLike(Long commentId) {
+        Long userId = communityAuthService.getUserId();
+        communityAuthService.checkUserValidity(userId);
+
+        CommentLikeVO  commentLikeVO = new CommentLikeVO();
+        commentLikeVO.setCommentId(commentId);
+        commentLikeVO.setUserId(userId);
+
+        try {
+            commentLikeDAO.save(commentLikeVO);
+        } catch (Exception e) {
+            throw new CommentException(HttpStatus.BAD_REQUEST, "댓글 좋아요 추가 실패");
+        }
     }
 }

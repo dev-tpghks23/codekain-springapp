@@ -83,4 +83,11 @@ public class CommentServiceTest {
         Long commentId = 1L;
         commentService.deleteComment(commentId);
     }
+
+//    댓글 좋아요 테스트
+    @Test
+    public void addCommentLikeTest(){
+        Long commentId = 1L;
+        commentService.addCommentLike(commentId);
+    }
 }
