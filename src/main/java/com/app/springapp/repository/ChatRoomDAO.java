@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,6 +19,11 @@ public class ChatRoomDAO {
 //    채팅방 목록 전체 불러와주기
     public List<ChatRoomDTO> findAll(){
         return chatRoomMapper.selectAll();
+    }
+
+//    채팅방 정보 불러오기
+    public Optional<ChatRoomVO> findById(Long id){
+        return Optional.ofNullable(chatRoomMapper.selectById(id));
     }
 
 //    채팅방 목록 페이징 조회

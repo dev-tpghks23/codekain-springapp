@@ -29,4 +29,15 @@ public class ChatRoomServiceTest {
 
         chatRoomService.createChatRoom(chatRoomRequestDTO);
     }
+
+//    채팅방 참여 중인 유저 불러오기 테스트
+    @Test
+    public void getChatRoomUsersTest() {
+        Long chatRoomId = 3L;
+        chatRoomService.getChatRoomUsers(chatRoomId)
+                .stream()
+                .forEach((chatUser) -> {
+                    log.info(chatUser.toString());
+                });
+    }
 }

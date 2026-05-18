@@ -12,6 +12,9 @@ public interface ChatRoomMapper {
 //    채팅방 방 목록 불러와주기
     public List<ChatRoomDTO> selectAll();
 
+//    채팅방 상세 정보 불러와주기
+    public ChatRoomVO selectById(Long id);
+
 //    채팅방 목록 페이징 조회
     public List<ChatRoomDTO> selectAllWithPaging(Map<String, Object> filters);
 

@@ -1,6 +1,9 @@
 package com.app.springapp.service;
 
+import com.app.springapp.domain.dto.ChatUserDTO;
 import com.app.springapp.domain.dto.request.ChatRoomRequestDTO;
+import com.app.springapp.domain.dto.response.ChatRoomResponseDTO;
+import com.app.springapp.domain.dto.response.ChatUserResponseDTO;
 import com.app.springapp.domain.vo.ChatUserVO;
 import com.app.springapp.domain.vo.ChatRoomVO;
 import com.app.springapp.exception.ChatException;
@@ -10,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = {Exception.class})
@@ -41,5 +47,24 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatMemberVO.setUserId(userId);
 
         chatMemberDAO.save(chatMemberVO);
+    }
+
+//    채팅방 정보 불러오기
+    @Override
+    public ChatRoomResponseDTO getChatRoomInfo(Long id) {
+        return chatRoomDAO.findById(id)
+                .map(ChatRoomResponseDTO::from)
+                .orElseThrow(() -> {
+                    throw new ChatException(HttpStatus.BAD_REQUEST, "해당 채팅방을 불러올 수 없습니다");
+                });
+    }
+
+    //    채팅방 내 채팅중인 인원 불러오기
+    @Override
+    public List<ChatUserResponseDTO> getChatRoomUsers(Long chatRoomId) {
+        List<ChatUserDTO> chatUsers = chatMemberDAO.findByChatRoomId(chatRoomId);
+        return chatUsers.stream()
+                .map(ChatUserResponseDTO::from)
+                .collect(Collectors.toList());
     }
 }
