@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,9 +19,14 @@ public class CommentDAO {
         return commentMapper.selectAllByPostId(postId);
     }
 
-//    유저가 작성 한 댓글 조회
-    public List<CommentDTO> findAllByUserId(Long userId){
-        return commentMapper.selectAllByUserId(userId);
+//    유저가 작성 한 댓글 조회 (페이지네이션)
+    public List<CommentDTO> findAllByUserId(Map<String, Object> filters){
+        return commentMapper.selectAllByUserId(filters);
+    }
+
+//    유저가 작성 한 댓글 총 개수
+    public int countByUserId(Long userId){
+        return commentMapper.countByUserId(userId);
     }
 
 //    댓글 작성

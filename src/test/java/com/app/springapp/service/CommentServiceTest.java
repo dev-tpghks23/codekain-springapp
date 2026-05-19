@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 @Slf4j
@@ -29,7 +30,8 @@ public class CommentServiceTest {
     @Test
     public void getUserWrittenCommentsTest(){
         Long userId = 1L;
-        List<CommentResponseDTO> comments = commentService.getUserWrittenComments(userId);
+        Map<String, Object> result = commentService.getUserWrittenComments(userId, 1);
+        List<CommentResponseDTO> comments = (List<CommentResponseDTO>) result.get("comments");
         comments.stream()
                 .forEach(comment -> {log.info(comment.toString());});
     }

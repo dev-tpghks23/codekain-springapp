@@ -13,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,13 +35,32 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toList());
     }
 
-//    유저가 작성 한 댓글 목록 불러오기
+//    유저가 작성 한 댓글 목록 불러오기 (페이지네이션)
     @Override
-    public List<CommentResponseDTO> getUserWrittenComments(Long userId) {
-        return commentDAO.findAllByUserId(userId)
+    public Map<String, Object> getUserWrittenComments(Long userId, int page) {
+        int size = 10;
+        int offset = (page - 1) * size;
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("userId", userId);
+        filters.put("size", size);
+        filters.put("offset", offset);
+
+        List<CommentResponseDTO> comments = commentDAO.findAllByUserId(filters)
                 .stream()
                 .map(CommentResponseDTO::from)
                 .collect(Collectors.toList());
+
+        int totalCount = commentDAO.countByUserId(userId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("comments", comments);
+        result.put("currentPage", page);
+        result.put("totalPages", (int) Math.ceil((double) totalCount / size));
+        result.put("size", size);
+        result.put("totalCount", totalCount);
+
+        return result;
     }
 
     @Override
