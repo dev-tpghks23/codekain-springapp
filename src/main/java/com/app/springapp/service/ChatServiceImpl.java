@@ -97,8 +97,7 @@ public class ChatServiceImpl implements ChatService {
 
 //    모든 채팅방 불러와주기 (커뮤니티 페이지 들어왔을 때 보이는 모든 채팅방, 페이지네이션)
     @Override
-    public Map<String, Object> loadAllChatRoom(int page) {
-        int size = 6;
+    public Map<String, Object> loadAllChatRoom(int page, int size) {
         int offset = (page - 1) * size;
 
         Map<String, Object> filters = new HashMap<>();
