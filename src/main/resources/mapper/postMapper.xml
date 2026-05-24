@@ -40,7 +40,14 @@
         FROM TBL_POST_LIKE TPL
         JOIN VW_POST_SUMMARY VPS ON VPS.ID = TPL.POST_ID
         WHERE TPL.USER_ID = #{userId} AND VPS.POST_IS_DELETED = 0
-        ORDER BY TPL.ID DESC
+        <choose>
+            <when test="order != null and order == 'popular'">
+                ORDER BY LIKE_COUNT DESC
+            </when>
+            <otherwise>
+                ORDER BY TPL.ID DESC
+            </otherwise>
+        </choose>
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
@@ -60,7 +67,7 @@
         FROM VW_POST_SUMMARY
         WHERE USER_ID = #{userId} AND POST_IS_DELETED = 0
         <choose>
-            <when test="order != null and order == 'likeCount'">
+            <when test="order != null and order == 'popular'">
                 ORDER BY LIKE_COUNT DESC
             </when>
             <otherwise>
