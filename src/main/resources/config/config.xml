@@ -59,6 +59,7 @@
         <typeAlias type="com.app.springapp.domain.dto.UserReportDTO" alias="UserReportDTO"/>
         <typeAlias type="com.app.springapp.domain.dto.InquireDTO" alias="InquireDTO"/>
 
+
         <!-- Request DTO Alias -->
         <typeAlias type="com.app.springapp.domain.dto.request.UserRequestDTO" alias="UserRequestDTO"/>
         <typeAlias type="com.app.springapp.domain.dto.request.UserBadgeRequestDTO" alias="UserBadgeRequestDTO"/>
@@ -108,6 +109,7 @@
         <typeAlias type="com.app.springapp.domain.dto.request.CertRenewRequestDTO" alias="CertRenewRequestDTO"/>
         <typeAlias type="com.app.springapp.domain.dto.request.VerificationRequestDTO" alias="VerificationRequestDTO"/>
         <typeAlias type="com.app.springapp.domain.dto.request.MyPageEditRequestDTO" alias="MyPageEditRequestDTO"/>
+        <typeAlias type="com.app.springapp.domain.dto.request.MyPageWithdrawRequestDTO" alias="MyPageWithdrawRequestDTO"/>
 
         <!-- Response DTO Alias -->
         <typeAlias type="com.app.springapp.domain.dto.response.UserResponseDTO" alias="UserResponseDTO"/>
@@ -219,5 +221,6 @@
         <typeAlias type="com.app.springapp.domain.vo.CertRenewVO" alias="CertRenewVO"/>
         <typeAlias type="com.app.springapp.domain.vo.InquireVO" alias="InquireVO"/>
         <typeAlias type="com.app.springapp.domain.vo.SignWordVO" alias="SignWordVO"/>
+        <typeAlias type="com.app.springapp.domain.vo.UserWithdrawVO" alias="UserWithdrawVO"/>
     </typeAliases>
 </configuration>

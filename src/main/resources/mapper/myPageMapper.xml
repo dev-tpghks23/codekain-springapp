@@ -6,6 +6,7 @@
     <!-- ===================================================== -->
     <!-- 마이페이지 메인 -->
     <!-- ===================================================== -->
+
     <!-- 프로필 카드 조회 -->
     <select id="selectProfileByUserId" parameterType="Long" resultType="MyPageProfileResponseDTO">
         SELECT ID AS id, USER_NAME AS userName, USER_NICKNAME AS userNickname, USER_INTRO AS userIntro, USER_JOB AS userJob, USER_ADDRESS AS userAddress, USER_EMAIL AS userEmail, USER_PHONE_NUM AS userPhoneNum, USER_EXP AS userExp, USER_PROFILE AS userProfile, USER_CREATE_AT AS userCreateAt
@@ -197,6 +198,256 @@
     <!-- ===================================================== -->
     <!-- 회원탈퇴 -->
     <!-- ===================================================== -->
+
+    <!-- 회원탈퇴 사유 저장 -->
+    <insert id="insertUserWithdraw" parameterType="UserWithdrawVO">
+        <selectKey keyProperty="id" resultType="Long" order="BEFORE">
+            SELECT SEQ_USER_WITHDRAW.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TBL_USER_WITHDRAW (ID, USER_ID, USER_WITHDRAW_REASON, USER_WITHDRAW_DETAIL)
+        VALUES (#{id}, #{userId}, #{userWithdrawReason}, #{userWithdrawDetail})
+    </insert>
+
+    <!-- 회원이 작성했거나 회원 게시글에 달린 댓글 좋아요 삭제 -->
+    <delete id="deleteCommentLikeByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_COMMENT_LIKE
+        WHERE USER_ID = #{userId}
+           OR COMMENT_ID IN (
+            SELECT TC.ID
+            FROM TBL_COMMENT TC
+            WHERE TC.USER_ID = #{userId}
+               OR TC.POST_ID IN (SELECT TP.ID FROM TBL_POST TP WHERE TP.USER_ID = #{userId})
+        )
+    </delete>
+
+    <!-- 회원이 신고했거나 회원 게시글/댓글에 연결된 댓글 신고 삭제 -->
+    <delete id="deleteCommentReportByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_COMMENT_REPORT
+        WHERE USER_ID = #{userId}
+           OR COMMENT_ID IN (
+            SELECT TC.ID
+            FROM TBL_COMMENT TC
+            WHERE TC.USER_ID = #{userId}
+               OR TC.POST_ID IN (SELECT TP.ID FROM TBL_POST TP WHERE TP.USER_ID = #{userId})
+        )
+    </delete>
+
+    <!-- 회원 댓글 및 회원 게시글에 달린 댓글 삭제 -->
+    <delete id="deleteCommentByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_COMMENT
+        WHERE USER_ID = #{userId}
+           OR POST_ID IN (SELECT ID FROM TBL_POST WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 회원이 누른 좋아요 및 회원 게시글 좋아요 삭제 -->
+    <delete id="deletePostLikeByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_POST_LIKE
+        WHERE USER_ID = #{userId}
+           OR POST_ID IN (SELECT ID FROM TBL_POST WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 회원이 신고했거나 회원 게시글에 연결된 게시글 신고 삭제 -->
+    <delete id="deletePostReportByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_POST_REPORT
+        WHERE USER_ID = #{userId}
+           OR POST_ID IN (SELECT ID FROM TBL_POST WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 회원 게시글 첨부파일 삭제 -->
+    <delete id="deletePostFileByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_POST_FILE
+        WHERE POST_ID IN (SELECT ID FROM TBL_POST WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 회원 게시글 삭제 -->
+    <delete id="deletePostByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_POST
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 오늘의 단어 결과 삭제 -->
+    <delete id="deleteTodayWordResultByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_TODAY_WORD_RESULT
+        WHERE TODAY_WORD_DETAIL_ID IN (
+            SELECT TWD.ID
+            FROM TBL_TODAY_WORD_DETAIL TWD
+                     JOIN TBL_TODAY_WORD TW ON TWD.TODAY_WORD_ID = TW.ID
+            WHERE TW.USER_ID = #{userId}
+        )
+    </delete>
+
+    <!-- 오늘의 단어 상세 삭제 -->
+    <delete id="deleteTodayWordDetailByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_TODAY_WORD_DETAIL
+        WHERE TODAY_WORD_ID
+        IN (SELECT ID FROM TBL_TODAY_WORD WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 오늘의 단어 삭제 -->
+    <delete id="deleteTodayWordByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_TODAY_WORD
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 퀴즈 응시 상세 삭제 -->
+    <delete id="deleteQuizAttemptDetailByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_QUIZ_ATTEMPT_DETAIL
+        WHERE QUIZ_ATTEMPT_ID
+        IN (SELECT ID FROM TBL_QUIZ_ATTEMPT WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 퀴즈 응시 기록 삭제 -->
+    <delete id="deleteQuizAttemptByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_QUIZ_ATTEMPT
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 단어 학습 기록 삭제 -->
+    <delete id="deleteWordStudyByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_WORD_STUDY
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 학습 시작 기록 삭제 -->
+    <delete id="deleteEduStartByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_EDU_START
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 교육 수료증 기록 삭제 -->
+    <delete id="deleteEduCertByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_EDU_CERT
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 출석 기록 삭제 -->
+    <delete id="deleteUserAttendanceByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_USER_ATTENDANCE
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 자격증 갱신 기록 삭제 -->
+    <delete id="deleteCertRenewByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_CERT_RENEW
+        WHERE TEST_RESULT_ID IN (
+            SELECT TR.ID
+            FROM TBL_TEST_RESULT TR
+                     JOIN TBL_TEST_APPLY TA ON TR.TEST_APPLY_ID = TA.ID
+            WHERE TA.USER_ID = #{userId}
+        )
+    </delete>
+
+    <!-- 시험 결과 삭제 -->
+    <delete id="deleteTestResultByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_TEST_RESULT
+        WHERE TEST_APPLY_ID
+        IN (SELECT ID FROM TBL_TEST_APPLY WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 시험 신청 기록 삭제 -->
+    <delete id="deleteTestApplyByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_TEST_APPLY
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 회원 뱃지 삭제 -->
+    <delete id="deleteUserBadgeByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_USER_BADGE
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 팔로우/팔로워 기록 삭제 -->
+    <delete id="deleteFollowByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_FOLLOW
+        WHERE FOLLOWER_ID = #{userId}
+           OR FOLLOWING_ID = #{userId}
+    </delete>
+
+    <!-- 차단 기록 삭제 -->
+    <delete id="deleteUserBlockByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_USER_BLOCK
+        WHERE BLOCKER_ID = #{userId}
+           OR BLOCKING_ID = #{userId}
+    </delete>
+
+    <!-- 알림 기록 삭제 -->
+    <delete id="deleteNotificationByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_NOTIFICATION
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- AI 챗봇 기록 삭제 -->
+    <delete id="deleteAiChatByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_AI_CHAT
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 문의 기록 삭제 -->
+    <delete id="deleteInquireByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_INQUIRE
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 통합 신고 기록 삭제 -->
+    <delete id="deleteReportByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_REPORT
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 채팅방 신고 기록 삭제 -->
+    <delete id="deleteChatRoomReportByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_CHAT_ROOM_REPORT
+        WHERE USER_ID = #{userId}
+        OR CHAT_ROOM_ID
+        IN (SELECT ID FROM TBL_CHAT_ROOM WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 채팅 메시지 삭제 -->
+    <delete id="deleteChatByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_CHAT
+        WHERE USER_ID = #{userId}
+        OR CHAT_ROOM_ID
+        IN (SELECT ID FROM TBL_CHAT_ROOM WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 채팅방 참여 기록 삭제 -->
+    <delete id="deleteChatUserByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_CHAT_USER
+        WHERE USER_ID = #{userId}
+        OR CHAT_ROOM_ID
+        IN (SELECT ID FROM TBL_CHAT_ROOM WHERE USER_ID = #{userId})
+    </delete>
+
+    <!-- 회원이 만든 채팅방 삭제 -->
+    <delete id="deleteChatRoomByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_CHAT_ROOM
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 회원 신고 기록 삭제 -->
+    <delete id="deleteUserReportByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_USER_REPORT
+        WHERE USER_ID = #{userId}
+        OR REPORTING_USER_ID = #{userId}
+    </delete>
+
+    <!-- 회원 설정 삭제 -->
+    <delete id="deleteSettingByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_SETTING
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 소셜 로그인 연결 정보 삭제 -->
+    <delete id="deleteSocialUserByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_SOCIAL_USER
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 회원 기본 정보 삭제 -->
+    <delete id="deleteUserByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_USER
+        WHERE ID = #{userId}
+    </delete>
 
     <!-- ===================================================== -->
     <!-- 레벨 -->

@@ -1,6 +1,7 @@
 package com.app.springapp.service;
 
 import com.app.springapp.domain.dto.request.MyPageEditRequestDTO;
+import com.app.springapp.domain.dto.request.MyPageWithdrawRequestDTO;
 import com.app.springapp.domain.dto.response.MyPageActivityResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageAttendanceResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageFollowResponseDTO;
@@ -67,4 +68,9 @@ public interface MyPageService {
 
     //    비밀번호 변경
     void updateUserPassword(String currentPassword, String newPassword, Long userId);
+
+    // 회원탈퇴
+
+    //    회원탈퇴 처리
+    void withdrawUser(MyPageWithdrawRequestDTO requestDTO, Long userId);
 }

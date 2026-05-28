@@ -1,6 +1,7 @@
 package com.app.springapp.service;
 
 import com.app.springapp.domain.dto.request.MyPageEditRequestDTO;
+import com.app.springapp.domain.dto.request.MyPageWithdrawRequestDTO;
 import com.app.springapp.domain.dto.response.ApiResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageActivityResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageAttendanceResponseDTO;
@@ -9,6 +10,7 @@ import com.app.springapp.domain.dto.response.MyPageMainResponseDTO;
 import com.app.springapp.domain.dto.response.MyPagePostResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageProfileResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageStudyStatusResponseDTO;
+import com.app.springapp.domain.vo.UserWithdrawVO;
 import com.app.springapp.exception.MyPageException;
 import com.app.springapp.exception.PostException;
 import com.app.springapp.repository.MyPageDAO;
@@ -266,5 +268,131 @@ public class MyPageServiceImpl implements MyPageService {
         }
 
         myPageDAO.updateUserPassword(passwordEncoder.encode(newPassword), userId);
+    }
+
+    // 회원탈퇴
+
+    //    회원탈퇴 처리
+    @Override
+    public void withdrawUser(MyPageWithdrawRequestDTO requestDTO, Long userId) {
+        MyPageProfileResponseDTO userInfo = getUserInfo(userId);
+
+        validateWithdrawRequest(requestDTO, userInfo, userId);
+        saveWithdrawReason(requestDTO, userId);
+        deleteWithdrawUserData(userId);
+    }
+
+    //    회원탈퇴 요청값과 회원 인증 정보를 검증
+    private void validateWithdrawRequest(MyPageWithdrawRequestDTO requestDTO, MyPageProfileResponseDTO userInfo, Long userId) {
+        if ("ADMIN".equals(userInfo.getUserRole())) {
+            throw new MyPageException("관리자 계정은 회원탈퇴를 진행할 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (requestDTO.getWithdrawReason() == null || requestDTO.getWithdrawReason().isBlank()) {
+            throw new MyPageException("탈퇴 사유를 선택해 주세요.", HttpStatus.BAD_REQUEST);
+        }
+
+        if ("기타".equals(requestDTO.getWithdrawReason()) && (requestDTO.getWithdrawDetail() == null || requestDTO.getWithdrawDetail().isBlank())) {
+            throw new MyPageException("기타 사유를 입력해 주세요.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!requestDTO.isWithdrawAgree()) {
+            throw new MyPageException("탈퇴 유의사항 확인에 동의해 주세요.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (isOAuthUser(userInfo)) {
+            validateSocialWithdraw(requestDTO, userInfo);
+            return;
+        }
+
+        validateLocalWithdraw(requestDTO, userId);
+    }
+
+    //    실제 소셜 로그인 제공자인지 확인
+    private boolean isOAuthUser(MyPageProfileResponseDTO userInfo) {
+        String provider = String.valueOf(userInfo.getSocialMemberProvider()).toLowerCase();
+
+        return "google".equals(provider)
+                || "kakao".equals(provider)
+                || "naver".equals(provider);
+    }
+
+    //    일반 회원은 비밀번호를 확인한 후 탈퇴 처리
+    private void validateLocalWithdraw(MyPageWithdrawRequestDTO requestDTO, Long userId) {
+        if (requestDTO.getUserPassword() == null || requestDTO.getUserPassword().isBlank()) {
+            throw new MyPageException("비밀번호를 입력해 주세요.", HttpStatus.BAD_REQUEST);
+        }
+
+        String savedPassword = myPageDAO.findUserPasswordByUserId(userId);
+
+        if (!requestDTO.getUserPassword().equals(savedPassword) && !passwordEncoder.matches(requestDTO.getUserPassword(), savedPassword)) {
+            throw new MyPageException("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //    소셜 회원은 현재 이메일로 발송된 인증번호를 확인한 후 탈퇴 처리
+    private void validateSocialWithdraw(MyPageWithdrawRequestDTO requestDTO, MyPageProfileResponseDTO userInfo) {
+        if (requestDTO.getEmailCode() == null || requestDTO.getEmailCode().isBlank()) {
+            throw new MyPageException("이메일 인증번호를 입력해 주세요.", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean emailCheck = authService.verifyUserEmailVerificationCode(userInfo.getUserEmail(), requestDTO.getEmailCode());
+
+        if (!emailCheck) {
+            throw new MyPageException("이메일 인증번호를 확인해 주세요.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //    회원탈퇴 사유 저장
+    private void saveWithdrawReason(MyPageWithdrawRequestDTO requestDTO, Long userId) {
+        UserWithdrawVO userWithdrawVO = new UserWithdrawVO();
+
+        userWithdrawVO.setUserId(userId);
+        userWithdrawVO.setUserWithdrawReason(requestDTO.getWithdrawReason());
+        userWithdrawVO.setUserWithdrawDetail(requestDTO.getWithdrawDetail());
+
+        myPageDAO.saveUserWithdraw(userWithdrawVO);
+    }
+
+    //    FK 제약을 고려해 회원 관련 데이터를 먼저 삭제한 뒤 회원 기본 정보를 삭제
+    private void deleteWithdrawUserData(Long userId) {
+        myPageDAO.deleteCommentLikeByWithdrawUserId(userId);
+        myPageDAO.deleteCommentReportByWithdrawUserId(userId);
+        myPageDAO.deleteCommentByWithdrawUserId(userId);
+        myPageDAO.deletePostLikeByWithdrawUserId(userId);
+        myPageDAO.deletePostReportByWithdrawUserId(userId);
+        myPageDAO.deletePostFileByWithdrawUserId(userId);
+        myPageDAO.deletePostByWithdrawUserId(userId);
+
+        myPageDAO.deleteTodayWordResultByWithdrawUserId(userId);
+        myPageDAO.deleteTodayWordDetailByWithdrawUserId(userId);
+        myPageDAO.deleteTodayWordByWithdrawUserId(userId);
+        myPageDAO.deleteQuizAttemptDetailByWithdrawUserId(userId);
+        myPageDAO.deleteQuizAttemptByWithdrawUserId(userId);
+        myPageDAO.deleteWordStudyByWithdrawUserId(userId);
+        myPageDAO.deleteEduStartByWithdrawUserId(userId);
+        myPageDAO.deleteEduCertByWithdrawUserId(userId);
+        myPageDAO.deleteUserAttendanceByWithdrawUserId(userId);
+
+        myPageDAO.deleteCertRenewByWithdrawUserId(userId);
+        myPageDAO.deleteTestResultByWithdrawUserId(userId);
+        myPageDAO.deleteTestApplyByWithdrawUserId(userId);
+        myPageDAO.deleteUserBadgeByWithdrawUserId(userId);
+        myPageDAO.deleteFollowByWithdrawUserId(userId);
+        myPageDAO.deleteUserBlockByWithdrawUserId(userId);
+        myPageDAO.deleteNotificationByWithdrawUserId(userId);
+        myPageDAO.deleteAiChatByWithdrawUserId(userId);
+        myPageDAO.deleteInquireByWithdrawUserId(userId);
+        myPageDAO.deleteReportByWithdrawUserId(userId);
+
+        myPageDAO.deleteChatRoomReportByWithdrawUserId(userId);
+        myPageDAO.deleteChatByWithdrawUserId(userId);
+        myPageDAO.deleteChatUserByWithdrawUserId(userId);
+        myPageDAO.deleteChatRoomByWithdrawUserId(userId);
+
+        myPageDAO.deleteUserReportByWithdrawUserId(userId);
+        myPageDAO.deleteSettingByWithdrawUserId(userId);
+        myPageDAO.deleteSocialUserByWithdrawUserId(userId);
+        myPageDAO.deleteUserByWithdrawUserId(userId);
     }
 }

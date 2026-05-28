@@ -1,6 +1,7 @@
 package com.app.springapp.service;
 
 import com.app.springapp.domain.dto.request.MyPageEditRequestDTO;
+import com.app.springapp.domain.dto.request.MyPageWithdrawRequestDTO;
 import com.app.springapp.domain.dto.response.MyPageFollowResponseDTO;
 import com.app.springapp.domain.dto.response.MyPagePostResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageStudyStatusResponseDTO;
@@ -8,8 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
+
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 @Slf4j
@@ -199,5 +203,119 @@ public class MyPageServiceTest {
 //        log.info("비밀번호 변경 성공");
 //    }
 
+    // 회원탈퇴
+
+    //    일반 회원탈퇴 테스트용 회원 생성
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    // 회원탈퇴
+
+    //    일반 회원탈퇴 테스트용 회원 생성
+    private Long createWithdrawLocalTestUser() {
+        Long userId = jdbcTemplate.queryForObject("SELECT SEQ_USER.NEXTVAL FROM DUAL", Long.class);
+        String suffix = String.valueOf(userId);
+
+        jdbcTemplate.update(
+                "INSERT INTO TBL_USER (ID, USER_NAME, USER_NICKNAME, USER_EMAIL, USER_PHONE_NUM, USER_PASSWORD, USER_EXP, USER_PROFILE, USER_ROLE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                userId,
+                "탈퇴테스트회원",
+                "withdraw_local_" + suffix,
+                "withdraw_local_" + suffix + "@email.com",
+                "010-9000-" + String.format("%04d", userId % 10000),
+                "test123!@#",
+                0,
+                "default.jpg",
+                "USER"
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO TBL_SOCIAL_USER (ID, SOCIAL_USER_PROVIDER_ID, SOCIAL_USER_PROVIDER, USER_ID) VALUES (SEQ_SOCIAL_USER.NEXTVAL, ?, ?, ?)",
+                "withdraw_local_" + suffix,
+                "local",
+                userId
+        );
+
+        return userId;
+    }
+
+    //    소셜 회원탈퇴 테스트용 회원 생성
+    private Long createWithdrawSocialTestUser() {
+        Long userId = jdbcTemplate.queryForObject("SELECT SEQ_USER.NEXTVAL FROM DUAL", Long.class);
+        String suffix = String.valueOf(userId);
+
+        jdbcTemplate.update(
+                "INSERT INTO TBL_USER (ID, USER_NAME, USER_NICKNAME, USER_EMAIL, USER_PHONE_NUM, USER_PASSWORD, USER_EXP, USER_PROFILE, USER_ROLE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                userId,
+                "소셜탈퇴테스트회원",
+                "withdraw_social_" + suffix,
+                "withdraw_social_" + suffix + "@email.com",
+                "010-9100-" + String.format("%04d", userId % 10000),
+                null,
+                0,
+                "default.jpg",
+                "USER"
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO TBL_SOCIAL_USER (ID, SOCIAL_USER_PROVIDER_ID, SOCIAL_USER_PROVIDER, USER_ID) VALUES (SEQ_SOCIAL_USER.NEXTVAL, ?, ?, ?)",
+                "google_withdraw_" + suffix,
+                "google",
+                userId
+        );
+
+        return userId;
+    }
+
+    //    일반 회원탈퇴 테스트
+    @Test
+    public void withdrawLocalUserTest() {
+        Long userId = createWithdrawLocalTestUser();
+
+        MyPageWithdrawRequestDTO requestDTO = new MyPageWithdrawRequestDTO();
+        requestDTO.setWithdrawReason("자주 사용하지 않아요");
+        requestDTO.setWithdrawDetail(null);
+        requestDTO.setUserPassword("test123!@#");
+        requestDTO.setWithdrawAgree(true);
+
+        myPageService.withdrawUser(requestDTO, userId);
+
+        Long userCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TBL_USER WHERE ID = ?", Long.class, userId);
+        Long withdrawCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TBL_USER_WITHDRAW WHERE USER_ID = ?", Long.class, userId);
+
+        log.info("일반 회원 삭제 여부: {}", userCount == 0);
+        log.info("일반 회원 탈퇴 사유 저장 여부: {}", withdrawCount > 0);
+    }
+
+    //    소셜 회원탈퇴 테스트
+    @Test
+    public void withdrawSocialUserTest() {
+        Long userId = createWithdrawSocialTestUser();
+
+        String userEmail = jdbcTemplate.queryForObject(
+                "SELECT USER_EMAIL FROM TBL_USER WHERE ID = ?",
+                String.class,
+                userId
+        );
+
+        String emailCode = "123456";
+        String redisKey = "email:" + userEmail + ":" + emailCode;
+
+        redisTemplate.opsForValue().set(redisKey, emailCode, 3, TimeUnit.MINUTES);
+
+        MyPageWithdrawRequestDTO requestDTO = new MyPageWithdrawRequestDTO();
+        requestDTO.setWithdrawReason("다른 계정을 사용할게요");
+        requestDTO.setWithdrawDetail(null);
+        requestDTO.setEmailCode(emailCode);
+        requestDTO.setWithdrawAgree(true);
+
+        myPageService.withdrawUser(requestDTO, userId);
+
+        Long userCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TBL_USER WHERE ID = ?", Long.class, userId);
+        Long withdrawCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TBL_USER_WITHDRAW WHERE USER_ID = ?", Long.class, userId);
+
+        log.info("소셜 회원 삭제 여부: {}", userCount == 0);
+        log.info("소셜 회원 탈퇴 사유 저장 여부: {}", withdrawCount > 0);
+    }
 
 }

@@ -6,6 +6,7 @@ import com.app.springapp.domain.dto.response.MyPageFollowResponseDTO;
 import com.app.springapp.domain.dto.response.MyPagePostResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageProfileResponseDTO;
 import com.app.springapp.domain.dto.response.MyPageStudyStatusResponseDTO;
+import com.app.springapp.domain.vo.UserWithdrawVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -63,9 +64,116 @@ public interface MyPageMapper {
     //    프로필 사진 기본 이미지로 변경
     void deleteUserProfile(@Param("userId") Long userId);
 
-    //    현재 비밀번호 조회
+    //    일반 회원 비밀번호 조회
     String selectUserPasswordByUserId(Long userId);
 
-    //    비밀번호 변경
+    //    일반 회원 비밀번호 변경
     void updateUserPassword(@Param("newPassword") String newPassword, @Param("userId") Long userId);
+
+    // 회원탈퇴
+
+    //    회원탈퇴 사유 저장
+    void insertUserWithdraw(UserWithdrawVO userWithdrawVO);
+
+    //    회원이 작성했거나 회원 게시글에 달린 댓글 좋아요 삭제
+    void deleteCommentLikeByWithdrawUserId(Long userId);
+
+    //    회원이 신고했거나 회원 게시글/댓글에 연결된 댓글 신고 삭제
+    void deleteCommentReportByWithdrawUserId(Long userId);
+
+    //    회원 댓글 및 회원 게시글에 달린 댓글 삭제
+    void deleteCommentByWithdrawUserId(Long userId);
+
+    //    회원이 누른 좋아요 및 회원 게시글 좋아요 삭제
+    void deletePostLikeByWithdrawUserId(Long userId);
+
+    //    회원이 신고했거나 회원 게시글에 연결된 게시글 신고 삭제
+    void deletePostReportByWithdrawUserId(Long userId);
+
+    //    회원 게시글 첨부파일 삭제
+    void deletePostFileByWithdrawUserId(Long userId);
+
+    //    회원 게시글 삭제
+    void deletePostByWithdrawUserId(Long userId);
+
+    //    오늘의 단어 결과 삭제
+    void deleteTodayWordResultByWithdrawUserId(Long userId);
+
+    //    오늘의 단어 상세 삭제
+    void deleteTodayWordDetailByWithdrawUserId(Long userId);
+
+    //    오늘의 단어 삭제
+    void deleteTodayWordByWithdrawUserId(Long userId);
+
+    //    퀴즈 응시 상세 삭제
+    void deleteQuizAttemptDetailByWithdrawUserId(Long userId);
+
+    //    퀴즈 응시 기록 삭제
+    void deleteQuizAttemptByWithdrawUserId(Long userId);
+
+    //    단어 학습 기록 삭제
+    void deleteWordStudyByWithdrawUserId(Long userId);
+
+    //    학습 시작 기록 삭제
+    void deleteEduStartByWithdrawUserId(Long userId);
+
+    //    교육 수료증 기록 삭제
+    void deleteEduCertByWithdrawUserId(Long userId);
+
+    //    출석 기록 삭제
+    void deleteUserAttendanceByWithdrawUserId(Long userId);
+
+    //    자격증 갱신 기록 삭제
+    void deleteCertRenewByWithdrawUserId(Long userId);
+
+    //    시험 결과 삭제
+    void deleteTestResultByWithdrawUserId(Long userId);
+
+    //    시험 신청 기록 삭제
+    void deleteTestApplyByWithdrawUserId(Long userId);
+
+    //    회원 뱃지 삭제
+    void deleteUserBadgeByWithdrawUserId(Long userId);
+
+    //    팔로우/팔로워 기록 삭제
+    void deleteFollowByWithdrawUserId(Long userId);
+
+    //    차단 기록 삭제
+    void deleteUserBlockByWithdrawUserId(Long userId);
+
+    //    알림 기록 삭제
+    void deleteNotificationByWithdrawUserId(Long userId);
+
+    //    AI 챗봇 기록 삭제
+    void deleteAiChatByWithdrawUserId(Long userId);
+
+    //    문의 기록 삭제
+    void deleteInquireByWithdrawUserId(Long userId);
+
+    //    통합 신고 기록 삭제
+    void deleteReportByWithdrawUserId(Long userId);
+
+    //    채팅방 신고 기록 삭제
+    void deleteChatRoomReportByWithdrawUserId(Long userId);
+
+    //    채팅 메시지 삭제
+    void deleteChatByWithdrawUserId(Long userId);
+
+    //    채팅방 참여 기록 삭제
+    void deleteChatUserByWithdrawUserId(Long userId);
+
+    //    회원이 만든 채팅방 삭제
+    void deleteChatRoomByWithdrawUserId(Long userId);
+
+    //    회원 신고 기록 삭제
+    void deleteUserReportByWithdrawUserId(Long userId);
+
+    //    회원 설정 삭제
+    void deleteSettingByWithdrawUserId(Long userId);
+
+    //    소셜 로그인 연결 정보 삭제
+    void deleteSocialUserByWithdrawUserId(Long userId);
+
+    //    회원 기본 정보 삭제
+    void deleteUserByWithdrawUserId(Long userId);
 }
