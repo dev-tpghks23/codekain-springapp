@@ -26,6 +26,11 @@
             FROM TBL_CHAT_USER
             GROUP BY CHAT_ROOM_ID
         ) TBU ON TBC.ID = TBU.CHAT_ROOM_ID
+        WHERE TBC.CHAT_ROOM_IS_DELETED = 0
+        <if test="keyword != null and keyword != ''">
+            AND (TBC.CHAT_ROOM_NAME LIKE '%' || #{keyword} || '%'
+            OR TBC.CHAT_ROOM_DETAIL LIKE '%' || #{keyword} || '%')
+        </if>
         ORDER BY TBC.ID DESC
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
@@ -42,7 +47,7 @@
             TCU.CHAT_START_AT, TCU.CHAT_LAST_READ_AT, TCU.USER_ID
         FROM VW_CHAT_ROOM VCR
         JOIN TBL_CHAT_USER TCU ON VCR.ID = TCU.CHAT_ROOM_ID
-        WHERE TCU.USER_ID = #{userId}
+        WHERE TCU.USER_ID = #{userId} AND VCR.CHAT_ROOM_IS_DELETED = 0
         ORDER BY TCU.CHAT_LAST_READ_AT DESC
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
@@ -54,4 +59,16 @@
         INSERT INTO TBL_CHAT_ROOM (ID, CHAT_ROOM_NAME, CHAT_ROOM_TYPE, CHAT_ROOM_PROFILE, USER_ID, CHAT_ROOM_DETAIL, CHAT_ROOM_LIMIT)
         VALUES (#{id}, #{chatRoomName}, #{chatRoomType}, #{chatRoomProfile}, #{userId}, #{chatRoomDetail}, #{chatRoomLimit})
     </insert>
+
+    <update id="update" parameterType="ChatRoomVO">
+        UPDATE TBL_CHAT_ROOM
+        SET CHAT_ROOM_NAME = #{chatRoomName}, CHAT_ROOM_DETAIL = #{chatRoomDetail}, CHAT_ROOM_LIMIT = #{chatRoomLimit}, CHAT_ROOM_PROFILE = #{chatRoomProfile}
+        WHERE ID = #{id} AND USER_ID = #{userId}
+    </update>
+
+    <update id="updateChatRoomIsDeleteById" parameterType="ChatRoomVO">
+        UPDATE TBL_CHAT_ROOM
+        SET CHAT_ROOM_IS_DELETED = 1
+        WHERE ID = #{id} AND USER_ID = #{userId}
+    </update>
 </mapper>

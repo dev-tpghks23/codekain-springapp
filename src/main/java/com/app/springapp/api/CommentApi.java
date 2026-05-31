@@ -27,7 +27,7 @@ public class CommentApi {
 
 //    게시글 내 댓글 조회 api
     @GetMapping("/{postId}")
-    @Operation(description = "게시글 내 댓글 조회")
+    @Operation(summary = "댓글 조회", description = "게시글 내 댓글 조회")
     @ApiResponse(responseCode = "200", description = "게시글 내 댓글 조회 성공")
     @ApiResponse(responseCode = "400", description = "게시글 내 댓글 조회 실패 (잘못된 요청)")
     @Parameter(
@@ -49,7 +49,7 @@ public class CommentApi {
 
 //    유저가 작성한 댓글 목록 불러오기
     @GetMapping("/users/{userId}")
-    @Operation(description = "유저가 작성 한 댓글 조회")
+    @Operation(summary = "유저 작성 댓글 조회", description = "유저가 작성 한 댓글 조회")
     @ApiResponse(responseCode = "200", description = "유저 작성 댓글 조회 성공")
     @ApiResponse(responseCode = "400", description = "유저 작성 댓글 조회 실패 (잘못된 요청)")
     @Parameter(
@@ -103,7 +103,7 @@ public class CommentApi {
 
 //    게시글 내 댓글 작성
     @PostMapping("/{postId}")
-    @Operation(description = "게시글 내 댓글 작성")
+    @Operation(summary = "댓글 작성", description = "게시글 내 댓글 작성")
     @ApiResponse(responseCode = "200", description = "게시글 내 댓글 작성 성공")
     @ApiResponse(responseCode = "400", description = "게시글 내 댓글 작성 실패 (잘못된 요청)")
     @Parameter(
@@ -125,7 +125,7 @@ public class CommentApi {
     }
 
     @PostMapping("/{postId}/replies/{commentId}")
-    @Operation(description = "게시글 내 대댓글 작성")
+    @Operation(summary = "대댓글 작성", description = "게시글 내 대댓글 작성")
     @ApiResponse(responseCode = "200", description = "대댓글 작성 성공")
     @ApiResponse(responseCode = "400", description = "대댓글 작성 실패 (잘못된 요청)")
     @Parameter(
@@ -155,7 +155,7 @@ public class CommentApi {
     }
 
     @PutMapping("/{postId}/{commentId}")
-    @Operation(description = "게시글 내 댓글 수정")
+    @Operation(summary = "댓글 수정", description = "게시글 내 댓글 수정")
     @ApiResponse(responseCode = "200", description = "댓글 수정 성공")
     @ApiResponse(responseCode = "400", description = "해당 댓글 수정 권한 없습니다.")
     @Parameter(
@@ -186,7 +186,7 @@ public class CommentApi {
     }
 
     @DeleteMapping("/{commentId}")
-    @Operation(description = "댓글 삭제 (대댓글 포함 소프트 삭제)")
+    @Operation(summary = "댓글 삭제", description = "댓글 삭제 (대댓글 포함 소프트 삭제)")
     @ApiResponse(responseCode = "204", description = "댓글 삭제 성공")
     @ApiResponse(responseCode = "400", description = "해당 댓글 삭제 권한 없습니다.")
     @Parameter(
@@ -207,6 +207,7 @@ public class CommentApi {
     }
 //    댓글 좋아요 하기
     @GetMapping("/likes/{commentId}")
+    @Operation(summary = "댓글 좋아요", description = "댓글 좋아요 하는 서비스")
     public ResponseEntity<ApiResponseDTO> addCommentLike(
             @PathVariable Long commentId
     ){
@@ -218,6 +219,7 @@ public class CommentApi {
 
 //    댓글 좋아요 취소
     @DeleteMapping("/likes/{commentId}")
+    @Operation(summary = "댓글 좋아요 취소", description = "댓글 좋아요 취소 하는 서비스")
     public ResponseEntity<ApiResponseDTO> cancelCommentLike(
             @PathVariable Long commentId
     ){

@@ -7,6 +7,7 @@ import com.app.springapp.domain.dto.response.PostSelectResponseDTO;
 import com.app.springapp.domain.vo.PostLikeVO;
 import com.app.springapp.domain.vo.PostVO;
 import com.app.springapp.exception.PostException;
+import com.app.springapp.repository.CommentDAO;
 import com.app.springapp.repository.PostDAO;
 import com.app.springapp.repository.PostLikeDAO;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class PostServiceImpl implements PostService {
     private final PostDAO postDAO;
     private final CommunityAuthService communityAuthService;
     private final PostLikeDAO postLikeDAO;
+    private final CommentDAO commentDAO;
 
     @Override
     public Map<String, Object> getAllPosts(Map<String, Object> req) {
@@ -34,17 +36,19 @@ public class PostServiceImpl implements PostService {
         int size = 4;
         int offset = (page - 1) * size;
         String postTag = (String) req.get("postTag");
+        String keyword = (String) req.get("keyword");
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("size", size);
         filters.put("offset", offset);
         filters.put("postTag", postTag);
+        filters.put("keyword", keyword);
 
         List<PostResponseDTO> posts = postDAO.findAll(filters).stream()
                 .map(PostResponseDTO::from)
                 .collect(Collectors.toList());
 
-        int postCounts = postDAO.findCount(postTag);
+        int postCounts = postDAO.findCount(filters);
 
         Map<String, Object> result = new HashMap<>();
         result.put("posts", posts);
@@ -167,7 +171,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-//    게시글 삭제
+//    게시글 삭제 (게시글에 있는 모든 댓글도 삭제)
     @Override
     public void deletePost(Long id) {
         Long userId = communityAuthService.getUserId();
@@ -175,6 +179,11 @@ public class PostServiceImpl implements PostService {
             PostVO postVO = new PostVO();
             postVO.setId(id);
             postVO.setUserId(userId);
+
+//            게시글 내 댓글 소프트삭제
+            commentDAO.updateDeleteByPostId(id);
+
+//            게시글 소프트 삭제
             postDAO.updatePostIsDeleted(postVO);
         } else {
             throw new PostException(HttpStatus.BAD_REQUEST, "해당 게시글 삭제 권한 없습니다.");

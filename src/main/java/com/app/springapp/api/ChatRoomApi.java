@@ -29,7 +29,7 @@ public class ChatRoomApi {
 
     //    채팅방 생성
     @PostMapping("")
-    @Operation(description = "채팅방 생성 작성")
+    @Operation(summary = "채팅방 생성", description = "채팅방 생성 작성")
     @ApiResponse(responseCode = "201", description = "채팅방 생성 성공")
     @ApiResponse(responseCode = "401", description = "채팅방 생성 권한이 없습니다.")
     public ResponseEntity<ApiResponseDTO> createChatRoom(
@@ -43,7 +43,7 @@ public class ChatRoomApi {
 
 //    채팅방 정보 불러오기
     @GetMapping("/{chatRoomId}")
-    @Operation(description = "채팅방 정보 불러오기")
+    @Operation(summary = "채팅방 정보", description = "채팅방 정보 불러오기")
     @ApiResponse(responseCode = "200", description = "채팅방 정보 불러오기 성공")
     @ApiResponse(responseCode = "400", description = "채팅방 정보 불러오기 실패")
     @Parameter(
@@ -65,7 +65,7 @@ public class ChatRoomApi {
 
 //    최초 1회 채팅방 참여중인 회원 불러오기
     @GetMapping("/{chatRoomId}/users")
-    @Operation(description = "채팅방 내 참여중인 유저 목록 불러오기")
+    @Operation(summary = "채팅방 내 유저 불러오기", description = "채팅방 내 참여중인 유저 목록 불러오기")
     @ApiResponse(responseCode = "200", description = "채팅방 내 참여중인 유저 목록 불러오기 성공")
     @ApiResponse(responseCode = "400", description = "채팅방 내 참여중인 유저 목록 불러오기 실패")
     @Parameter(
@@ -87,7 +87,7 @@ public class ChatRoomApi {
 
 //    현재 내가 채팅중인 채팅방 불러오기
     @GetMapping("/joined")
-    @Operation(description = "사용자가 진행중인 채팅방 불러오기")
+    @Operation(summary = "사용자가 진행중 채팅방", description = "사용자가 진행중인 채팅방 불러오기")
     @ApiResponse(responseCode = "200", description = "사용자가 진행중인 채팅방 불러오기 성공")
     @ApiResponse(responseCode = "400", description = "사용자가 진행중인 채팅방 불러오기 실패")
     @Parameter(
@@ -108,4 +108,21 @@ public class ChatRoomApi {
                 .body(ApiResponseDTO.of(true, "사용자 참여 채팅방 로드 성공", result));
     }
 
+//    채팅방 내용 수정
+    @PutMapping("/{chatRoomId}")
+    @Operation(summary = "채팅방 수정", description = "채팅방 관리자가 채팅방 정보를 수정 가능")
+    public ResponseEntity<ApiResponseDTO> updateChatRoomInfo(
+            @PathVariable Long chatRoomId
+    ){
+        return null;
+    }
+
+//    채팅방 삭제
+    @DeleteMapping("/{chatRoomId}")
+    @Operation(summary = "채팅방 삭제", description = "채팅방 관리자가 채팅방 삭제 하는 서비스")
+    public ResponseEntity<ApiResponseDTO> deleteChatRoom(
+            @PathVariable Long chatRoomId
+    ){
+        return null;
+    }
 }

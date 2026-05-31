@@ -13,6 +13,11 @@
         <if test="postTag != null and postTag != ''">
             AND POST_TAG = #{postTag}
         </if>
+        <if test="keyword != null and keyword != ''">
+            AND (POST_TITLE LIKE '%' || #{keyword} || '%'
+            OR POST_CONTENT LIKE '%' || #{keyword} || '%'
+            OR USER_NICKNAME LIKE '%' || #{keyword} || '%')
+        </if>
         ORDER BY ID DESC
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
@@ -65,7 +70,7 @@
 
     <select id="selectByUserId" parameterType="map" resultType="PostDTO">
         SELECT
-            ID, POST_TITLE, POST_CONTENT ,POST_READ_COUNT, POST_CREATE_AT, POST_TAG, USER_ID,
+            ID, POST_TITLE, POST_CONTENT ,POST_READ_COUNT, POST_CREATE_AT, POST_TAG, POST_PROFILE, USER_ID,
             USER_NICKNAME, USER_PROFILE,
             NVL(LIKE_COUNT, 0) AS LIKE_COUNT,
             NVL(COMMENT_COUNT, 0) AS COMMENT_COUNT
@@ -87,12 +92,17 @@
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
-    <select id="selectCount" parameterType="String" resultType="int">
+    <select id="selectCount" parameterType="map" resultType="int">
         SELECT COUNT(*)
-        FROM TBL_POST
+        FROM VW_POST_SUMMARY
         WHERE POST_IS_DELETED = 0
         <if test="postTag != null and postTag != ''">
             AND POST_TAG = #{postTag}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (POST_TITLE LIKE '%' || #{keyword} || '%'
+            OR POST_CONTENT LIKE '%' || #{keyword} || '%'
+            OR USER_NICKNAME LIKE '%' || #{keyword} || '%')
         </if>
     </select>
 

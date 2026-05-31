@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class ChatApi {
 
 //    채팅방 내에서 메세지 전체 조회
     @GetMapping("{chatRoomId}")
-    @Operation(description = "채팅방 내 전체 메세지 조회")
+    @Operation(summary = "채팅 메세지 조회", description = "채팅방 내 전체 메세지 조회")
     @ApiResponse(responseCode = "200", description = "전체 메세지 조회 성공")
     @ApiResponse(responseCode = "400", description = "전체 메세지 조회 실패 (잘못된 요청)")
     @Parameter(
@@ -48,7 +49,7 @@ public class ChatApi {
 
 //    채팅방에 메세지 작성
     @PostMapping("{chatRoomId}")
-    @Operation(description = "채팅방 내에서 메세지 작성")
+    @Operation(summary = "채팅 메세지 작성", description = "채팅방 내에서 메세지 작성")
     @ApiResponse(responseCode = "200", description = "메세지 작성 성공")
     @ApiResponse(responseCode = "400", description = "메세지 작성 실패 (잘못된 요청)")
     @Parameter(
@@ -82,12 +83,26 @@ public class ChatApi {
             in = ParameterIn.QUERY,
             schema = @Schema(type = "number")
     )
+    @Parameter(
+            name = "keyword",
+            description = "채팅방 목록 검색 키워드",
+            example = "수어",
+            required = false,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "String")
+    )
     @GetMapping("/rooms")
     public ResponseEntity<ApiResponseDTO> getAllChatRooms(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "6") int size
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(required = false, defaultValue = "") String keyword
     ){
-        Map<String, Object> result = chatService.loadAllChatRoom(page, size);
+        Map<String,Object> req = new HashMap<>();
+        req.put("page", page);
+        req.put("size", size);
+        req.put("keyword", keyword);
+
+        Map<String, Object> result = chatService.loadAllChatRoom(req);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDTO.of(true, "채팅방 불러오기 성공", result));
