@@ -34,8 +34,26 @@ public class MyPageProfileResponseDTO {
     @Schema(description = "회원 전화번호", example = "01012345678", required = false)
     private String userPhoneNum;
 
-    @Schema(description = "회원 경험치", example = "120", required = true)
+    @Schema(description = "회원 총 경험치", example = "120", required = true)
     private Long userExp;
+
+    @Schema(description = "현재 레벨", example = "2", required = true)
+    private Integer userLevel;
+
+    @Schema(description = "현재 레벨 이름", example = "입문자", required = true)
+    private String userLevelName;
+
+    @Schema(description = "현재 레벨에서 획득한 경험치", example = "20", required = true)
+    private Long currentLevelExp;
+
+    @Schema(description = "다음 레벨까지 필요한 경험치", example = "120", required = true)
+    private Long nextLevelExp;
+
+    @Schema(description = "다음 레벨까지 남은 경험치", example = "100", required = true)
+    private Long remainingExp;
+
+    @Schema(description = "현재 레벨 경험치 진행률", example = "16", required = true)
+    private Integer expPercent;
 
     @Schema(description = "회원 프로필 이미지", example = "/2026/05/27/example.png", required = false)
     private String userProfile;

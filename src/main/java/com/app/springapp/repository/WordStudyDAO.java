@@ -42,4 +42,9 @@ public class WordStudyDAO {
     public void update(WordStudyVO wordStudyVO) {
         wordStudyMapper.update(wordStudyVO);
     }
+
+    //  학습-단어 매핑 번호로 학습 번호 조회
+    public Long findEduIdByEduWordMapId(Long eduWordMapId) {
+        return wordStudyMapper.selectEduIdByEduWordMapId(eduWordMapId);
+    }
 }

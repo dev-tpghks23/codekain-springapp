@@ -53,4 +53,11 @@
         WHERE USER_ID = #{userId}
           AND EDU_WORD_MAP_ID = #{eduWordMapId}
     </update>
+
+    <!-- 학습-단어 매핑 번호로 학습 번호 조회 -->
+    <select id="selectEduIdByEduWordMapId" parameterType="Long" resultType="Long">
+        SELECT EDU_ID
+        FROM TBL_EDU_WORD_MAP
+        WHERE ID = #{eduWordMapId}
+    </select>
 </mapper>

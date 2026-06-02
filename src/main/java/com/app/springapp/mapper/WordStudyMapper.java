@@ -25,4 +25,7 @@ public interface WordStudyMapper {
     // 단어 학습 완료 상태 수정
     public void update(WordStudyVO wordStudyVO);
 
+    //    학습-단어 매핑 번호로 학습 번호 조회
+    Long selectEduIdByEduWordMapId(Long eduWordMapId);
+
 }
