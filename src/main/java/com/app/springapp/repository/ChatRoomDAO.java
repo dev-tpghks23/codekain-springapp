@@ -22,8 +22,8 @@ public class ChatRoomDAO {
     }
 
 //    채팅방 단건 정보 불러오기
-    public Optional<ChatRoomDTO> findById(Long id){
-        return chatRoomMapper.select(id).stream().findFirst();
+    public Optional<ChatRoomDTO> findById(Map<String, Object> filter){
+        return chatRoomMapper.select(filter).stream().findFirst();
     }
 
 //    전체 채팅방 목록 페이지네이션 조회

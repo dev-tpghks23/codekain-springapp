@@ -68,7 +68,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 //    채팅방 정보 불러오기
     @Override
     public ChatRoomResponseDTO getChatRoomInfo(Long id) {
-        return chatRoomDAO.findById(id)
+        Long userId = communityAuthService.getUserId();
+        communityAuthService.checkUserValidity(userId);
+
+        Map<String,Object> filter = new HashMap<>();
+        filter.put("id", id);
+        filter.put("userId", userId);
+
+        return chatRoomDAO.findById(filter)
                 .map(ChatRoomResponseDTO::from)
                 .orElseThrow(() -> {
                     throw new ChatException(HttpStatus.BAD_REQUEST, "해당 채팅방을 불러올 수 없습니다");

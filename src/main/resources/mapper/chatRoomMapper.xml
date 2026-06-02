@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.springapp.mapper.ChatRoomMapper">
-    <select id="select" parameterType="Long" resultType="ChatRoomDTO">
-        SELECT TBC.ID, TBC.CHAT_ROOM_NAME, TBC.CHAT_ROOM_TYPE, TBC.CHAT_ROOM_CREATE_AT, TBC.CHAT_ROOM_PROFILE, TBC.USER_ID, TBC.CHAT_ROOM_IS_DELETED, TBC.CHAT_ROOM_DETAIL, TBC.CHAT_ROOM_LIMIT,
-               TBU.CHAT_ROOM_USERS
+    <select id="select" parameterType="map" resultType="ChatRoomDTO">
+        SELECT
+            TBC.ID, TBC.CHAT_ROOM_NAME, TBC.CHAT_ROOM_TYPE, TBC.CHAT_ROOM_CREATE_AT, TBC.CHAT_ROOM_PROFILE, TBC.USER_ID, TBC.CHAT_ROOM_IS_DELETED, TBC.CHAT_ROOM_DETAIL, TBC.CHAT_ROOM_LIMIT,
+            TBU.CHAT_ROOM_USERS,
+            CASE WHEN #{userId} IS NOT NULL AND TBC.USER_ID = #{userId} THEN 1 ELSE 0 END AS IS_OWNER
         FROM TBL_CHAT_ROOM TBC
         JOIN (
             SELECT CHAT_ROOM_ID, COUNT(CHAT_ROOM_ID) AS CHAT_ROOM_USERS

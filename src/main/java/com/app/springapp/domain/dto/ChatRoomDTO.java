@@ -31,4 +31,6 @@ public class ChatRoomDTO {
     private String chatStartAt;
     @Schema(description = "마지막으로 채팅 메세지 생성된 시각", example = "2024-01-01T00:00:00")
     private String chatLastReadAt;
+    @Schema(description = "채팅방 방장 여부", example = "True")
+    private Boolean isOwner;
 }

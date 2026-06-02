@@ -156,18 +156,10 @@ public class CommentApi {
     }
 
 //    자신이 작성 한 댓글 수정
-    @PutMapping("/{postId}/{commentId}")
+    @PutMapping("/{commentId}")
     @Operation(summary = "댓글 수정", description = "게시글 내 댓글 수정")
     @ApiResponse(responseCode = "200", description = "댓글 수정 성공")
     @ApiResponse(responseCode = "400", description = "해당 댓글 수정 권한 없습니다.")
-    @Parameter(
-            name = "postId",
-            description = "게시글 아이디",
-            example = "1",
-            required = true,
-            in = ParameterIn.PATH,
-            schema = @Schema(type = "number")
-    )
     @Parameter(
             name = "commentId",
             description = "댓글 아이디",
@@ -177,7 +169,6 @@ public class CommentApi {
             schema = @Schema(type = "number")
     )
     public ResponseEntity<ApiResponseDTO> updatePostComment(
-            @PathVariable Long postId,
             @PathVariable Long commentId,
             @RequestBody CommentRequestDTO commentRequestDTO
     ) {

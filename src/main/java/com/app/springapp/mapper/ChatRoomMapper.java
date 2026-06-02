@@ -11,7 +11,7 @@ import java.util.Map;
 @Mapper
 public interface ChatRoomMapper {
 //    채팅방 목록 전체 또는 특정 채팅방 조회 (id null → 전체, id 값 있음 → 단건)
-    public List<ChatRoomDTO> select(Long id);
+    public List<ChatRoomDTO> select(Map<String, Object> filter);
 
 //    채팅방 목록 페이징 조회
     public List<ChatRoomDTO> selectAllWithPaging(Map<String, Object> filters);

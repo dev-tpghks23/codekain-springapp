@@ -29,6 +29,8 @@ public class ChatRoomResponseDTO {
     private int ChatRoomLimit;
     @Schema(description = "채팅방 현재 채팅중인 인원", example = "50")
     private int ChatRoomUsers;
+    @Schema(description = "채팅방 방장 여부", example = "True")
+    private Boolean isOwner;
 
     public static ChatRoomResponseDTO from(ChatRoomDTO dto) {
         ChatRoomResponseDTO res = new ChatRoomResponseDTO();
@@ -41,6 +43,7 @@ public class ChatRoomResponseDTO {
         res.setChatRoomDetail(dto.getChatRoomDetail());
         res.setChatRoomLimit(dto.getChatRoomLimit());
         res.setChatRoomUsers(dto.getChatRoomUsers());
+        res.setIsOwner(dto.getIsOwner());
         return res;
     }
 
