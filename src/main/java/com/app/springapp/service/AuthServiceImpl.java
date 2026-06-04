@@ -317,7 +317,9 @@ public class AuthServiceImpl implements AuthService {
     public boolean verifyUserPhoneVerificationCode(String userPhone, String code) {
         String key = "phone:" + userPhone + ":" + code;
         try {
-            String storedCode = String.valueOf(redisTemplate.opsForValue().get(key));
+            Object stored = redisTemplate.opsForValue().get(key);
+            if (stored == null) return false;
+            String storedCode = (String) stored;
             redisTemplate.delete(key);
             return code.equals(storedCode);
         } catch (Exception e) {
@@ -345,7 +347,9 @@ public class AuthServiceImpl implements AuthService {
     public boolean verifyUserEmailVerificationCode(String userEmail, String code) {
         String key = "email:" + userEmail + ":" + code;
         try {
-            String storedCode = String.valueOf(redisTemplate.opsForValue().get(key));
+            Object stored = redisTemplate.opsForValue().get(key);
+            if (stored == null) return false;
+            String storedCode = (String) stored;
             redisTemplate.delete(key);
             return code.equals(storedCode);
         } catch (Exception e) {
