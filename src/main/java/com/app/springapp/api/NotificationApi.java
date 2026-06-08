@@ -75,10 +75,10 @@ public class NotificationApi {
         Long userId = Long.parseLong((String) claims.get("id"));
         notificationService.send(
                 userId,
-                "INQUIRY_ANSWER",
-                "문의 답변 도착",
-                "회원님의 문의에 답변이 등록되었습니다.",
-                "/customservice/result"
+                "REVIEW",
+                "후기를 작성해주세요! ⭐",
+                "수업은 어떠셨나요? 후기를 남겨주세요.",
+                "null"
         );
         return ResponseEntity.ok("테스트 알림 전송 완료");
     }

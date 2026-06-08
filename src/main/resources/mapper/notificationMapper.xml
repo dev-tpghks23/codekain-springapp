@@ -53,4 +53,12 @@
         WHERE ID = #{id}
     </update>
 
+    <update id="updateAllReadByUserIdAndType">
+        UPDATE TBL_NOTIFICATION
+        SET NOTIFICATION_IS_READ = 1,
+            NOTIFICATION_READ_AT = CURRENT_TIMESTAMP
+        WHERE USER_ID = #{userId}
+          AND NOTIFICATION_TYPE = #{type}
+          AND NOTIFICATION_IS_READ = 0
+    </update>
 </mapper>

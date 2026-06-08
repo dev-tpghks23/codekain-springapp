@@ -7,6 +7,7 @@ import com.app.springapp.mapper.ReviewMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -21,5 +22,9 @@ public class ReviewDAO {
 
     public List<ReviewResponseDTO> findAllReviews() {
         return reviewMapper.selectAllReviews();
+    }
+
+    public LocalDate findLastReviewDate(Long userId) {
+        return reviewMapper.selectLastReviewDate(userId);
     }
 }

@@ -34,6 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
             case "NOTICE"           -> setting.getSettingBulletin() == 1;
             case "LEARNING"         -> setting.getSettingStudy() == 1;
             case "INQUIRY_ANSWER"   -> setting.getSettingPushNotify() == 1;
+            case "REVIEW"           -> true;
             default -> true;
         };
 

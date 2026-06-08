@@ -35,4 +35,8 @@ public class NotificationDAO {
     public void delete(Long id) {
         notificationMapper.softDelete(id);
     }
+
+    public void markAllReadByUserIdAndType(Long userId, String type) {
+        notificationMapper.updateAllReadByUserIdAndType(userId, type);
+    }
 }

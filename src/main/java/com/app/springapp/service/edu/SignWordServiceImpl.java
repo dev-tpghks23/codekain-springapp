@@ -140,7 +140,7 @@ public class SignWordServiceImpl implements SignWordService {
 //    @Scheduled(cron = "0 */1 * * * *") // 1분마다 캐쉬 초기화
     @Scheduled(cron = "0 0 0 * * *")
     public void scheduledClearCache() {
-//        log.warn("=== 캐시 자동 초기화 실행 ===");
+        log.warn("=== 캐시 자동 초기화 실행 ===");
         redisTemplate.delete("todaySignWords::" + LocalDate.now().toString());
     }
 
