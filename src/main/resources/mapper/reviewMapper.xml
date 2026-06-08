@@ -22,4 +22,10 @@
                  JOIN TBL_USER USERS ON REVIEW.USER_ID = USERS.ID
         ORDER BY REVIEW.REVIEW_RATING DESC, REVIEW.REVIEW_DATE DESC  /* ← 평점+최신순 */
     </select>
+
+    <select id="selectLastReviewDate" parameterType="Long" resultType="java.time.LocalDate">
+        SELECT MAX(REVIEW_DATE)
+        FROM TBL_REVIEW
+        WHERE USER_ID = #{userId}
+    </select>
 </mapper>

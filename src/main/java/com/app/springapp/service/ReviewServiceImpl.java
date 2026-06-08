@@ -3,6 +3,7 @@ package com.app.springapp.service;
 import com.app.springapp.domain.dto.ReviewDTO;
 import com.app.springapp.domain.dto.request.ReviewRequestDTO;
 import com.app.springapp.domain.dto.response.ReviewResponseDTO;
+import com.app.springapp.repository.NotificationDAO;
 import com.app.springapp.repository.ReviewDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewDAO reviewDAO;
     private final RedisTemplate<String, String> redisTemplate;
+    private final NotificationService notificationService;
+    private final NotificationDAO notificationDAO;
 
     @Override
     public void writeReview(Long userId, ReviewRequestDTO request) {
@@ -34,7 +37,11 @@ public class ReviewServiceImpl implements ReviewService {
                 request.getReviewContent()
         );
         reviewDAO.insertReview(reviewDTO);
+
+        // 후기 작성 완료 시 REVIEW 타입 알림 읽음 처리
+        notificationDAO.markAllReadByUserIdAndType(userId, "REVIEW");
     }
+
 
     @Override
     public List<ReviewResponseDTO> getAllReviews() {
