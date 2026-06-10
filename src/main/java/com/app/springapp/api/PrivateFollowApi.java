@@ -38,7 +38,9 @@ public class PrivateFollowApi {
             Authentication authentication
     ){
         Long userId = ((UserDTO)  authentication.getPrincipal()).getId();
-        return null;
-
+        followService.cancelFollow(userId,followingId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "유저 팔로우 취소 성공"));
     }
 }
