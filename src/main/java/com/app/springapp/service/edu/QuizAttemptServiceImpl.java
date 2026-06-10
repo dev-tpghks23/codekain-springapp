@@ -40,6 +40,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         quizAttemptVO.setQuizId(quizId);
         quizAttemptVO.setQuizAttemptScore(0);
         quizAttemptVO.setQuizAttemptTotalCount(totalCount);
+        quizAttemptVO.setQuizAttemptTime(requestDTO.getQuizAttemptTime());
 
         quizAttemptDAO.save(quizAttemptVO);
 

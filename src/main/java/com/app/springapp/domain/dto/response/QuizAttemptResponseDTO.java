@@ -18,6 +18,8 @@ public class QuizAttemptResponseDTO {
     private int quizAttemptScore;
     @Schema(description = "총 문제 수", example = "10")
     private int quizAttemptTotalCount;
+    @Schema(description = "퀴즈 풀이 소요시간: 초 단위", example = "120")
+    private int quizAttemptTime;
     @Schema(description = "유저 번호", example = "1")
     private Long userId;
     @Schema(description = "퀴즈 번호", example = "1")
@@ -29,6 +31,7 @@ public class QuizAttemptResponseDTO {
         res.setQuizAttemptCreateAt(dto.getQuizAttemptCreateAt());
         res.setQuizAttemptScore(dto.getQuizAttemptScore());
         res.setQuizAttemptTotalCount(dto.getQuizAttemptTotalCount());
+        res.setQuizAttemptTime(dto.getQuizAttemptTime());
         res.setUserId(dto.getUserId());
         res.setQuizId(dto.getQuizId());
         return res;

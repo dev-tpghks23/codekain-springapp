@@ -24,4 +24,7 @@ public class MyPageLearningStatusResponseDTO {
 
     @Schema(description = "최근 학습 일시", example = "2026-06-03T10:00:00")
     private LocalDateTime recentStudyAt;
+
+    @Schema(description = "학습 구분", example = "LEARN")
+    private String learningType;
 }

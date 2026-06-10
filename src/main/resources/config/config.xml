@@ -116,6 +116,8 @@
         <typeAlias type="com.app.springapp.domain.dto.request.MyPageWithdrawRequestDTO" alias="MyPageWithdrawRequestDTO"/>
         <typeAlias type="com.app.springapp.domain.dto.request.ReviewRequestDTO" alias="ReviewRequestDTO"/>
         <typeAlias type="com.app.springapp.domain.dto.request.MyPageCertificateApplyRequestDTO" alias="MyPageCertificateApplyRequestDTO"/>
+        <typeAlias type="com.app.springapp.domain.dto.request.QuizStartRequestDTO" alias="QuizStartRequestDTO"/>
+
 
         <!-- Response DTO Alias -->
         <typeAlias type="com.app.springapp.domain.dto.response.UserResponseDTO" alias="UserResponseDTO"/>
@@ -188,6 +190,7 @@
         <typeAlias type="com.app.springapp.domain.dto.response.AddressSearchResponseDTO" alias="AddressSearchResponseDTO"/>
         <typeAlias type="com.app.springapp.domain.dto.response.MyPageCertificateApplyCompleteResponseDTO" alias="MyPageCertificateApplyCompleteResponseDTO"/>
 
+
         <!-- VO Alias -->
         <typeAlias type="com.app.springapp.domain.vo.UserVO" alias="UserVO"/>
         <typeAlias type="com.app.springapp.domain.vo.SocialUserVO" alias="SocialUserVO"/>
@@ -245,6 +248,7 @@
         <typeAlias type="com.app.springapp.domain.vo.UserRewardHistoryVO" alias="UserRewardHistoryVO"/>
         <typeAlias type="com.app.springapp.domain.vo.UserExpHistoryVO" alias="UserExpHistoryVO"/>
         <typeAlias type="com.app.springapp.domain.vo.CertReceiveAddressVO" alias="CertReceiveAddressVO"/>
+        <typeAlias type="com.app.springapp.domain.vo.QuizStartVO" alias="QuizStartVO"/>
     </typeAliases>
 
     <typeHandlers>

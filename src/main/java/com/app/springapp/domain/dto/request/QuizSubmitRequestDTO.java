@@ -12,7 +12,8 @@ import java.util.List;
 public class QuizSubmitRequestDTO {
     @Schema(description = "사용자 번호", example = "1", required = true)
     private Long userId;
-
     @Schema(description = "제출 답안 목록", required = true)
     private List<QuizSubmitAnswerRequestDTO> answers;
+    @Schema(description = "퀴즈 풀이 소요시간: 초 단위", example = "120")
+    private int quizAttemptTime;
 }

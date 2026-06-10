@@ -33,4 +33,11 @@ public class MyPageLearningResultResponseDTO {
 
     @Schema(description = "응시 일시", example = "2026-06-03T10:00:00")
     private LocalDateTime quizAttemptCreateAt;
+
+    @Schema(description = "학습결과 타입", example = "LEARN")
+    private String resultType;
+
+    @Schema(description = "학습결과 이동 경로", example = "/study/learn")
+    private String resultPath;
+
 }
