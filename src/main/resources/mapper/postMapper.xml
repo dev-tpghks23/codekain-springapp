@@ -18,7 +18,14 @@
             OR POST_CONTENT LIKE '%' || #{keyword} || '%'
             OR USER_NICKNAME LIKE '%' || #{keyword} || '%')
         </if>
-        ORDER BY ID DESC
+        <choose>
+            <when test="order != null and order == 'read_count'">
+                ORDER BY POST_READ_COUNT DESC
+            </when>
+            <otherwise>
+                ORDER BY ID DESC
+            </otherwise>
+        </choose>
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
